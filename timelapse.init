@@ -1,0 +1,63 @@
+#!/sbin/openrc-run
+
+name="timelapse"
+description="Hardware Accelerated Timelapse Docker Compose Service"
+
+# The directory where your docker-compose.yml is located
+COMPOSE_DIR="/opt/timelapse"
+# The container name as defined in your docker-compose.yml
+CONTAINER_NAME="hw-timelapse-recorder"
+
+# Declare custom commands that OpenRC should recognize
+extra_started_commands="shell logs"
+
+depend() {
+    # Ensure the docker daemon is running and network is up before starting this service
+    need docker
+    after net-online
+}
+
+start() {
+    ebegin "Starting $name Docker Compose stack"
+    cd "$COMPOSE_DIR" || return 1
+    # Start the stack detached
+    docker compose up -d
+    eend $?
+}
+
+stop() {
+    ebegin "Stopping $name Docker Compose stack"
+    cd "$COMPOSE_DIR" || return 1
+    # Tear down the stack
+    docker compose down
+    eend $?
+}
+
+restart() {
+    ebegin "Restarting $name Docker Compose stack"
+    cd "$COMPOSE_DIR" || return 1
+    docker compose restart
+    eend $?
+}
+
+status() {
+    cd "$COMPOSE_DIR" || return 1
+    docker compose ps
+}
+
+shell() {
+    ebegin "Entering interactive terminal for $name"
+    cd "$COMPOSE_DIR" || return 1
+    # Drop into a bash shell inside the running container.
+    # Since your container is Ubuntu-based, /bin/bash is available.
+    docker compose exec "$CONTAINER_NAME" /bin/bash
+    eend $?
+}
+
+logs() {
+    ebegin "Tailing logs for $name (Press Ctrl+C to exit)"
+    cd "$COMPOSE_DIR" || return 1
+    # Tail the logs and follow them (-f)
+    docker compose logs -f
+    eend $?
+}

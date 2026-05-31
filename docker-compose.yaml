@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  timelapse-hw:
+    build: .
+    container_name: hw-timelapse-recorder
+    restart: unless-stopped
+    devices:
+      - /dev/dri:/dev/dri
+    environment:
+      - IMAGE_URL=http://your-camera-or-machine-ip/image.jpg
+      - OUTPUT_FPS=30
+      - FILE_PREFIX=cam1_timelapse  # Define your static prefix here
+    volumes:
+      - /path/to/your/local/output/folder:/output
