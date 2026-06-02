@@ -14,7 +14,7 @@ Instead of writing thousands of images to your drive, this container holds the i
 You can install the dependencies, configure Docker, pull the prebuilt container from Docker Hub , and set up the background service by running a single command as root:
 
 ```bash
-wget -qO- [https://raw.githubusercontent.com/gpocali/docker-hw-timelapse-recorder/main/setup.sh](https://raw.githubusercontent.com/gpocali/docker-hw-timelapse-recorder/main/setup.sh) | sh -s -- --install
+wget -qO- https://raw.githubusercontent.com/gpocali/docker-hw-timelapse-recorder/main/setup.sh | sh -s -- --install
 
 ```
 
