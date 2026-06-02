@@ -32,19 +32,28 @@ def start_ffmpeg_process():
     
     cmd = [
         "ffmpeg",
-        "-y",                      # Overwrite output files
-        "-f", "image2pipe",        # Tell FFmpeg to expect a pipe of images
-        "-vcodec", "mjpeg",        # Input format is JPEG
-        "-framerate", "1",         # We are feeding 1 frame per second
-        "-i", "-",                 # Read from Standard Input (stdin)
+        "-y",                      
+        "-f", "image2pipe",        
+        "-vcodec", "mjpeg",        
+        
+        # Tell FFmpeg to treat incoming frames as if they belong to a 30fps video
+        # This creates the fast-forward timelapse effect automatically
+        "-framerate", OUTPUT_FPS,         
+        "-i", "-",                 
         
         # Intel Hardware Acceleration (VAAPI)
         "-vaapi_device", "/dev/dri/renderD128", 
-        "-vf", "format=nv12,hwupload",          
+        
+        # 1. Scale to guarantee even dimensions (divisible by 2)
+        # 2. Convert to NV12 pixel format
+        # 3. Upload to the iGPU
+        "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2,format=nv12,hwupload",          
+        
         "-c:v", "hevc_vaapi",                   
+        "-profile:v", "main",      # Ensure a standard HEVC profile is used
+        "-tag:v", "hvc1",          # Critical for playback compatibility
         "-qp", "25",                            
         
-        "-r", OUTPUT_FPS,          # Set the final video frame rate
         output_filename
     ]
     
