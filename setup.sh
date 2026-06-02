@@ -7,8 +7,9 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # --- CONFIGURATION ---
-# Replace this with the raw URL to your GitHub repository's main/master branch
-RAW_REPO_URL="https://raw.githubusercontent.com/YOUR_GITHUB_NAME/YOUR_REPO_NAME/main"
+# Points to the raw GitHub repository's main branch
+RAW_REPO_URL="https://raw.githubusercontent.com/gpocali/docker-hw-timelapse-recorder/main"
+COMPOSE_DIR="/opt/timelapse"
 # ---------------------
 
 install_dependencies() {
@@ -38,21 +39,29 @@ install_dependencies() {
   rc-update add docker boot
   rc-service docker start
 
-  # 6. Setup the Timelapse Init Script
+  # 6. Setup the Timelapse Environment & Files
+  echo "Setting up application directory at $COMPOSE_DIR..."
+  mkdir -p "$COMPOSE_DIR"
+
+  echo "Downloading docker-compose.yml..."
+  if [ ! -f "$COMPOSE_DIR/docker-compose.yml" ]; then
+    wget -qO "$COMPOSE_DIR/docker-compose.yml" "$RAW_REPO_URL/docker-compose.yml"
+  else
+    echo "docker-compose.yml already exists. Skipping download to preserve user configs."
+  fi
+
   echo "Downloading and configuring timelapse.init..."
-  # If the file exists locally (e.g., cloned repo), use it. Otherwise, download it.
   if [ -f "./timelapse.init" ]; then
     cp ./timelapse.init /etc/init.d/timelapse
   else
     wget -qO /etc/init.d/timelapse "$RAW_REPO_URL/timelapse.init"
   fi
-  
   chmod +x /etc/init.d/timelapse
   
   # Add the timelapse service to boot and start it
   rc-update add timelapse default
   rc-service timelapse start
-  
+
   # 7. Setup Resilient MOTD / Login Prompt
   echo "Setting up login instructions..."
   
@@ -77,14 +86,13 @@ if ! grep -q "Timelapse Service" /etc/motd 2>/dev/null; then
     echo "----------------------------------"
 fi
 EOF
-  
-  # Make the profile script executable
   chmod +x /etc/profile.d/timelapse_motd.sh
 
   echo "------------------------------------------------------"
   echo "Installation Complete!"
   echo "The timelapse service has been started and enabled on boot."
-  echo "You can manage it using: rc-service timelapse {start|stop|restart|status}"
+  echo "Be sure to edit $COMPOSE_DIR/docker-compose.yml to set your IMAGE_URL and volume paths."
+  echo "Run 'rc-service timelapse restart' after making configuration changes."
   echo "------------------------------------------------------"
 }
 
@@ -96,12 +104,12 @@ uninstall_dependencies() {
     echo "Stopping and removing timelapse init service..."
     rc-service timelapse stop 2>/dev/null
     rc-update del timelapse default 2>/dev/null
-    rm /etc/init.d/timelapse
+    rm -f /etc/init.d/timelapse
   fi
 
   # 2. Prompt for dependency removal
   echo ""
-  echo "The timelapse service has been removed."
+  echo "The timelapse service has been stopped and disabled."
   read -p "Do you also want to uninstall shared dependencies (Docker, Docker Compose, Intel Drivers)? (y/N): " remove_deps
 
   if [ "$remove_deps" = "y" ] || [ "$remove_deps" = "Y" ]; then
@@ -121,20 +129,17 @@ uninstall_dependencies() {
   else
     echo "Shared dependencies were left intact."
   fi
-  
+
   # 3. Clean up MOTD and Login Scripts
   echo "Cleaning up login instructions..."
-  
-  # Remove from static MOTD
   if grep -q "Timelapse Service" /etc/motd 2>/dev/null; then
     sed -i '/--- Timelapse Service Commands ---/,/----------------------------------/d' /etc/motd
   fi
-  
-  # Remove the profile script
   rm -f /etc/profile.d/timelapse_motd.sh
 
   echo "------------------------------------------------------"
   echo "Uninstallation Complete!"
+  echo "Note: The application files in $COMPOSE_DIR have been left intact."
   echo "------------------------------------------------------"
 }
 

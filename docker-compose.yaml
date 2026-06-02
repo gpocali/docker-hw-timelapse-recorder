@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   timelapse-hw:
-    build: .
+    image: gpocali/hw-timelapse-recorder:latest
     container_name: hw-timelapse-recorder
     restart: unless-stopped
     devices:
@@ -10,6 +10,6 @@ services:
     environment:
       - IMAGE_URL=http://your-camera-or-machine-ip/image.jpg
       - OUTPUT_FPS=30
-      - FILE_PREFIX=cam1_timelapse  # Define your static prefix here
+      - FILE_PREFIX=cam1_timelapse
     volumes:
       - /path/to/your/local/output/folder:/output
