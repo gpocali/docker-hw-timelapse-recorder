@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   timelapse-hw:
     image: gpocali/hw-timelapse-recorder:latest
@@ -11,5 +9,6 @@ services:
       - IMAGE_URL=http://your-camera-or-machine-ip/image.jpg
       - OUTPUT_FPS=30
       - FILE_PREFIX=cam1_timelapse
+      - TZ=America/New_York
     volumes:
       - /path/to/your/local/output/folder:/output

@@ -50,7 +50,7 @@ shell() {
     cd "$COMPOSE_DIR" || return 1
     # Drop into a bash shell inside the running container.
     # Since your container is Ubuntu-based, /bin/bash is available.
-    docker compose exec "$CONTAINER_NAME" /bin/bash
+    docker exec "$CONTAINER_NAME" /bin/bash
     eend $?
 }
 
