@@ -1,16 +1,16 @@
 # Hardware-Accelerated Docker Timelapse Recorder
 
-[cite_start]This project runs a highly optimized, single Docker container that automatically fetches a JPEG image from a specified URL every second and compiles 3600 of those frames (1 hour) into an H.265 MKV video timelapse[cite: 1, 2]. 
+This project runs a highly optimized, single Docker container that automatically fetches a JPEG image from a specified URL every second and compiles 3600 of those frames (1 hour) into an H.265 MKV video timelapse. 
 
-[cite_start]Instead of writing thousands of images to your drive, this container holds the images in RAM using FFmpeg's `image2pipe` and utilizes Intel Quick Sync Video (QSV) hardware acceleration to offload the video encoding to your integrated GPU[cite: 7, 19, 20].
+Instead of writing thousands of images to your drive, this container holds the images in RAM using FFmpeg's `image2pipe` and utilizes Intel Quick Sync Video (QSV) hardware acceleration to offload the video encoding to your integrated GPU.
 
 ## Requirements
-* [cite_start]**Host OS**: Alpine Linux [cite: 24] [cite_start](The automated installer is built specifically for Alpine's OpenRC init system [cite: 53]).
-* [cite_start]**Hardware**: An Intel CPU with integrated graphics (e.g., 12th gen Intel Core processor)[cite: 4].
+**Host OS**: Alpine Linux (The automated installer is built specifically for Alpine's OpenRC init system).
+**Hardware**: An Intel CPU with integrated graphics (e.g., 12th gen Intel Core processor).
 
 ## Quick Installation
 
-[cite_start]You can install the dependencies, configure Docker, pull the prebuilt container from Docker Hub [cite: 121, 126][cite_start], and set up the background service by running a single command as root[cite: 68, 69]:
+You can install the dependencies, configure Docker, pull the prebuilt container from Docker Hub , and set up the background service by running a single command as root:
 
 ```bash
 wget -qO- [https://raw.githubusercontent.com/gpocali/docker-hw-timelapse-recorder/main/setup.sh](https://raw.githubusercontent.com/gpocali/docker-hw-timelapse-recorder/main/setup.sh) | sh -s -- --install
@@ -103,4 +103,3 @@ wget -qO- [https://raw.githubusercontent.com/gpocali/docker-hw-timelapse-recorde
 
 During uninstallation, you will be prompted and can choose whether you want to completely remove Docker and the Intel iGPU drivers from your system or leave them intact for other applications. Your saved timelapse videos and the `docker-compose.yml` file in `/opt/timelapse` are not deleted.
 
-```
