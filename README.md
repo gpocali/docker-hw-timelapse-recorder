@@ -6,6 +6,7 @@ Instead of writing thousands of images to your drive, this container holds the i
 
 ## Requirements
 **Host OS**: Alpine Linux (The automated installer is built specifically for Alpine's OpenRC init system).
+
 **Hardware**: An Intel CPU with integrated graphics (e.g., 12th gen Intel Core processor).
 
 ## Quick Installation
