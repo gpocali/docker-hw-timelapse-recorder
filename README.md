@@ -98,5 +98,6 @@ wget -qO- https://raw.githubusercontent.com/gpocali/docker-hw-timelapse-recorder
 
 ```
 
-During uninstallation, you will be prompted and can choose whether you want to completely remove Docker and the Intel iGPU drivers from your system or leave them intact for other applications. Your saved timelapse videos and the `docker-compose.yml` file in `/opt/timelapse` are not deleted.
+* During uninstallation, you will be prompted and can choose whether you want to completely remove Docker and the Intel iGPU drivers from your system or leave them intact for other applications. 
+* Your saved timelapse videos and the `docker-compose.yml` file in `/opt/timelapse` are not deleted.
 
