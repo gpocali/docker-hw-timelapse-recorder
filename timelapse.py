@@ -35,23 +35,18 @@ def start_ffmpeg_process():
         "-y",                      
         "-f", "image2pipe",        
         "-vcodec", "mjpeg",        
-        
-        # Tell FFmpeg to treat incoming frames as if they belong to a 30fps video
-        # This creates the fast-forward timelapse effect automatically
         "-framerate", OUTPUT_FPS,         
         "-i", "-",                 
         
         # Intel Hardware Acceleration (VAAPI)
         "-vaapi_device", "/dev/dri/renderD128", 
         
-        # 1. Scale to guarantee even dimensions (divisible by 2)
-        # 2. Convert to NV12 pixel format
-        # 3. Upload to the iGPU
+        # Scale to even dimensions and upload to the GPU
         "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2,format=nv12,hwupload",          
         
-        "-c:v", "hevc_vaapi",                   
-        "-profile:v", "main",      # Ensure a standard HEVC profile is used
-        "-tag:v", "hvc1",          # Critical for playback compatibility
+        # Encode using Intel H.264 HW encoder
+        "-c:v", "h264_vaapi",                   
+        "-profile:v", "main",      
         "-qp", "25",                            
         
         output_filename
