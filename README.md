@@ -5,9 +5,9 @@ This project runs a highly optimized, single Docker container that automatically
 Instead of writing thousands of images to your drive, this container holds the images in RAM using FFmpeg's `image2pipe` and utilizes Intel Quick Sync Video (QSV) hardware acceleration to offload the video encoding to your integrated GPU.
 
 ## Requirements
-**Host OS**: Alpine Linux (The automated installer is built specifically for Alpine's OpenRC init system).
+* **Host OS**: Alpine Linux (The automated installer is built specifically for Alpine's OpenRC init system).
 
-**Hardware**: An Intel CPU with integrated graphics (e.g., 12th gen Intel Core processor).
+* **Hardware**: An Intel CPU with integrated graphics (e.g., 12th gen Intel Core processor).
 
 ## Quick Installation
 
@@ -49,10 +49,7 @@ nano /opt/timelapse/docker-compose.yml
 
 2. Update the environment variables:
 * `IMAGE_URL`: The URL where the source JPEG is hosted.
-* 
-`FILE_PREFIX`: A static prefix for your output files (e.g., `cam1_timelapse`).
-
-
+* `FILE_PREFIX`: A static prefix for your output files (e.g., `cam1_timelapse`).
 * `OUTPUT_FPS`: The framerate for the final video (Default is 30).
 
 
@@ -98,7 +95,7 @@ If you need to diagnose issues, the init script provides custom interactive comm
 To safely stop the container, remove the init scripts, and clean up your login screen, run the uninstallation command:
 
 ```bash
-wget -qO- [https://raw.githubusercontent.com/gpocali/docker-hw-timelapse-recorder/main/setup.sh](https://raw.githubusercontent.com/gpocali/docker-hw-timelapse-recorder/main/setup.sh) | sh -s -- --uninstall
+wget -qO- https://raw.githubusercontent.com/gpocali/docker-hw-timelapse-recorder/main/setup.sh | sh -s -- --uninstall
 
 ```
 
