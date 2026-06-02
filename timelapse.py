@@ -42,7 +42,7 @@ def start_ffmpeg_process():
         "-vaapi_device", "/dev/dri/renderD128", 
         
         # Scale to even dimensions and upload to the GPU
-        "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2,format=nv12,hwupload",          
+        "-vf", "pad=ceil(iw/2)*2:ceil(ih/2)*2,format=nv12,hwupload",
         
         # Encode using Intel H.264 HW encoder
         "-c:v", "h264_vaapi",                   
