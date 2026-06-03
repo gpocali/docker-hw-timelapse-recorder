@@ -56,30 +56,34 @@ def start_ffmpeg_process():
     return subprocess.Popen(cmd, stdin=subprocess.PIPE, stderr=subprocess.DEVNULL)
 
 def main():
-    ffmpeg_process = start_ffmpeg_process()
-    frames_written = 0
+    ffmpeg_process, active_hour = start_ffmpeg_process()
     next_time = time.time()
 
     while True:
+        now = datetime.datetime.now()
+        
+        # Check if the wall clock hour has rolled over (e.g., from 2 to 3)
+        if now.hour != active_hour:
+            print(f"Top of the hour reached ({now.strftime('%H:00')}). Segmenting video...")
+            ffmpeg_process.stdin.close()
+            ffmpeg_process.wait() 
+            
+            # Start the new process and update the active_hour
+            ffmpeg_process, active_hour = start_ffmpeg_process()
+
         try:
             response = requests.get(IMAGE_URL, timeout=0.8)
             response.raise_for_status()
             
             ffmpeg_process.stdin.write(response.content)
             ffmpeg_process.stdin.flush()
-            frames_written += 1
             
         except requests.RequestException as e:
             print(f"Failed to fetch image: {e}")
+            # If it fails, FFmpeg just waits. We no longer care about dropped frames 
+            # throwing off the segment timing.
             
-        if frames_written >= 3600:
-            print("1 hour reached. Finalizing video...")
-            ffmpeg_process.stdin.close()
-            ffmpeg_process.wait() 
-            
-            ffmpeg_process = start_ffmpeg_process()
-            frames_written = 0
-
+        # Precision sleep to maintain exactly 1 second intervals
         next_time += 1.0
         sleep_time = next_time - time.time()
         if sleep_time > 0:
