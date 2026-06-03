@@ -26,8 +26,8 @@ def start_ffmpeg_process():
     # Ensure the directory structure exists
     os.makedirs(folder_path, exist_ok=True)
     
-    # Construct filename with the static prefix
-    timestamp = now.strftime("%Y%m%d_%H%M%S")
+    # Construct filename with formatted date, time, and timezone abbreviation
+    timestamp = now.astimezone().strftime("%Y-%m-%d_%H.%M.%S_%Z")
     output_filename = os.path.join(folder_path, f"{FILE_PREFIX}_{timestamp}.mkv")
     
     cmd = [
