@@ -11,10 +11,10 @@ OUTPUT_FPS = os.environ.get("OUTPUT_FPS", "30")
 FILE_PREFIX = os.environ.get("FILE_PREFIX", "timelapse")
 
 def start_ffmpeg_process():
-    """Starts a new FFmpeg process and handles dynamic folder creation."""
+    """Starts a new FFmpeg process and returns the process and its starting hour."""
     now = datetime.datetime.now()
     
-    # 1. Construct hierarchical path: YYYY/MM/DD/HH
+    # Construct hierarchical path: YYYY/MM/DD/HH
     folder_path = os.path.join(
         BASE_OUTPUT_DIR,
         now.strftime("%Y"),
@@ -23,10 +23,10 @@ def start_ffmpeg_process():
         now.strftime("%H")
     )
     
-    # Ensure the directory structure exists before writing to it
+    # Ensure the directory structure exists
     os.makedirs(folder_path, exist_ok=True)
     
-    # 2. Construct filename with the static prefix
+    # Construct filename with the static prefix
     timestamp = now.strftime("%Y%m%d_%H%M%S")
     output_filename = os.path.join(folder_path, f"{FILE_PREFIX}_{timestamp}.mkv")
     
@@ -53,7 +53,10 @@ def start_ffmpeg_process():
     ]
     
     print(f"Starting new video file: {output_filename}")
-    return subprocess.Popen(cmd, stdin=subprocess.PIPE, stderr=subprocess.DEVNULL)
+    process = subprocess.Popen(cmd, stdin=subprocess.PIPE, stderr=subprocess.DEVNULL)
+    
+    # Return the process AND the integer of the current hour (0-23)
+    return process, now.hour
 
 def main():
     ffmpeg_process, active_hour = start_ffmpeg_process()
