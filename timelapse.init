@@ -8,7 +8,9 @@ COMPOSE_DIR="/opt/timelapse"
 # The container name as defined in your docker-compose.yml
 CONTAINER_NAME="hw-timelapse-recorder"
 
-# Declare custom commands that OpenRC should recognize
+# Commands that can run anytime
+extra_commands="update"
+# Commands that require the service to be running
 extra_started_commands="shell logs"
 
 depend() {
@@ -48,16 +50,24 @@ status() {
 shell() {
     ebegin "Entering interactive terminal for $name"
     cd "$COMPOSE_DIR" || return 1
-    # Drop into a bash shell inside the running container.
-    # Since your container is Ubuntu-based, /bin/bash is available.
-    docker exec "$CONTAINER_NAME" /bin/bash
+    docker compose exec "$CONTAINER_NAME" /bin/bash
     eend $?
 }
 
 logs() {
     ebegin "Tailing logs for $name (Press Ctrl+C to exit)"
     cd "$COMPOSE_DIR" || return 1
-    # Tail the logs and follow them (-f)
     docker compose logs -f
+    eend $?
+}
+
+update() {
+    ebegin "Pulling the latest image and updating $name"
+    cd "$COMPOSE_DIR" || return 1
+    # 1. Pull the newest image from Docker Hub
+    docker compose pull
+    # 2. Re-evaluate the stack. If the image changed, Docker will automatically 
+    #    recreate the container with the new code while leaving your volumes intact.
+    docker compose up -d
     eend $?
 }
